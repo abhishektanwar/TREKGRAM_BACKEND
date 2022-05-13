@@ -64,7 +64,7 @@ router.put('/:idToFollow/follow',async(req,res)=>{
     try{
       // current user is trying to follow user
       const user = await User.findById(req.params.idToFollow);
-      const currentUser = await UsersfindById(req.body.userId);
+      const currentUser = await User.findById(req.body.userId);
       if(!user.followers.includes(req.body.userId)){
         // add current user to followers of user
         await user.updateOne({$push:{followers:req.body.userId}})
