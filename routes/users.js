@@ -1,6 +1,6 @@
 const { route } = require("./auth");
 const bcrypt = require("bcrypt");
-const Users = require("../models/Users");
+const User = require("../models/User");
 const router = require("express").Router();
 
 router.get("/", (req, res) => {
@@ -19,7 +19,7 @@ router.put("/:id", async (req, res) => {
       }
     }
     try{
-      const user = await Users.findByIdAndUpdate(req.body.userId,{$set:req.body});
+      const user = await User.findByIdAndUpdate(req.body.userId,{$set:req.body});
       res.status(200).json("Account has been updated")
     }
     catch(err){
@@ -34,7 +34,7 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id",async (req,res)=>{
   if(req.body.userId === req.params.id || req.body.isAdmin){
     try{
-      const user = await Users.findByIdAndDelete(req.params.id)
+      const user = await User.findByIdAndDelete(req.params.id)
       res.status(200).json("Account has been deleted");
     }
     catch(err){
@@ -50,7 +50,7 @@ router.delete("/:id",async (req,res)=>{
 // get a user
 router.get("/:id",async(req,res)=>{
   try{
-    const user = await Users.findById(req.params.id)
+    const user = await User.findById(req.params.id)
     const {password,updatedAt,...other} = user._doc
     res.status(200).json(other)
   }
@@ -63,8 +63,8 @@ router.put('/:idToFollow/follow',async(req,res)=>{
   if(req.body.userId !== req.params.idToFollow){
     try{
       // current user is trying to follow user
-      const user = await Users.findById(req.params.idToFollow);
-      const currentUser = await Users.findById(req.body.userId);
+      const user = await User.findById(req.params.idToFollow);
+      const currentUser = await UsersfindById(req.body.userId);
       if(!user.followers.includes(req.body.userId)){
         // add current user to followers of user
         await user.updateOne({$push:{followers:req.body.userId}})
@@ -88,8 +88,8 @@ router.put('/:idToFollow/follow',async(req,res)=>{
 router.put("/:idToUnfollow/unfollow",async (req,res)=>{
   if(req.body.userId !== req.params.idToUnfollow ){
     try{
-      const user = await Users.findById(req.params.idToUnfollow)
-      const currentUser = await Users.findById(req.body.userId)
+      const user = await User.findById(req.params.idToUnfollow)
+      const currentUser = await User.findById(req.body.userId)
       if(user.followers.includes(req.body.userId)){
         await user.updateOne({$pull:{followers:req.body.iserId}})
         await currentUser.updateOne({$pull:{following:req.params.idToUnfollow}})
