@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const {errorHandler} = require('./middleware/errorMiddleware');
+const cors = require("cors")
 
 // routes
 const userRoute = require("./routes/users");
@@ -21,10 +23,16 @@ mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true }, () => {
 app.use(express.json()); // body parser for API requests
 app.use(helmet());
 app.use(morgan("common"));
-
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use("/api/user", userRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/post", postRoute);
+
+app.use(errorHandler)
 
 app.listen(process.env.PORT, () => {
   console.log("backend server is running");
